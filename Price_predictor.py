@@ -10,8 +10,9 @@ from sklearn.metrics import root_mean_squared_error
 import matplotlib.pyplot as plt
 
 # load data
-data = fetch_california_housing()
+data = fetch_california_housing(as_frame=True)
 X, y = data.data, data.target
+print(X.columns)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
 
 # no data cleaning since no Nan values in dataset
@@ -72,4 +73,36 @@ print(-gradient_search.best_score_, gradient_search.best_params_)
 # histgradientboostregressor was the better model after tuning hyperparameters
 # results
 pred = gradient_boost_model.predict(X_test)
-print(root_mean_squared_error(y_test, pred))
+
+y_true = np.asarray(y_test)
+residuals = y_true - pred
+
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+# 1. Predicted vs actual
+axes[0].scatter(y_true, pred, alpha=0.3, s=10)
+lims = [0, max(y_true.max(), pred.max())]
+axes[0].plot(lims, lims, color='red', linestyle='--', label='Perfect prediction')
+axes[0].set_xlabel('Actual value ($100k)')
+axes[0].set_ylabel('Predicted value ($100k)')
+axes[0].set_title('Predicted vs Actual')
+axes[0].legend()
+
+# 2. Residuals vs predicted
+axes[1].scatter(pred, residuals, alpha=0.3, s=10)
+axes[1].axhline(0, color='red', linestyle='--')
+axes[1].set_xlabel('Predicted value ($100k)')
+axes[1].set_ylabel('Residual (actual - predicted)')
+axes[1].set_title('Residuals vs Predicted')
+
+# 3. Distribution of residuals
+axes[2].hist(residuals, bins=50, edgecolor='black')
+axes[2].axvline(0, color='red', linestyle='--')
+axes[2].set_xlabel('Residual ($100k)')
+axes[2].set_ylabel('Count')
+axes[2].set_title('Residual Distribution')
+
+plt.suptitle('Hist Gradient Boosting: Test Set Performance', fontsize=14)
+plt.tight_layout()
+plt.savefig('predictions_initial.png', bbox_inches='tight')
+plt.show()
