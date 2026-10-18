@@ -76,7 +76,7 @@ print(f"Baseline RMSE scores with Dummy Regressor:\nmean: {base_scores.mean()}\n
 gradient_boost_params = {
     "histmodel__max_iter": [300, 500, 800, 1200],
     "histmodel__learning_rate": [num/100 for num in range(3, 20, 3)],
-    "histmodel__max_depth": range(3, 9),
+    "histmodel__max_depth": range(3, 20),
     "histmodel__min_samples_leaf": [10, 20, 25, 30, 40],
     "histmodel__l2_regularization": [0.0, 0.1, 0.2, 1.0]
 }
